@@ -1,17 +1,27 @@
-import {useState} from 'react'
+import { useState } from 'react'
 import styled from "styled-components"
 
-export default function Seat({seat}){
+export default function Seat({ seat, selectedSeats, setSelectedSeats }) {
 
     const [selected, setSelected] = useState(false);
 
+    function verifySeat(){
+        if( seat.isAvailable && !selected){
+            setSelectedSeats([...selectedSeats, seat.id]);
+            setSelected(true);
+        }
+        else{
+            const newArray = selectedSeats.filter((SelectedSeat) => 
+            SelectedSeat !== seat.id);
+            setSelected(false);
+            setSelectedSeats(newArray);
+        }
+    }
+
     return (
-        <StyledSeat seat={seat} 
-        selected={selected} 
-        onClick={() => {
-            console.log(selected);
-        seat.isAvailable ? 
-        setSelected(!selected) : ''}} >
+        <StyledSeat seat={seat}
+            selected={selected}
+            onClick={verifySeat}>
             {seat.name}
         </StyledSeat>
     )
@@ -22,7 +32,7 @@ const StyledSeat = styled.li`
     align-items: center;
     justify-content: center;
 
-    margin-left: 10px;
+    margin-left: 8px;
     margin-bottom: 20px;
     
     width: 26px;
@@ -36,7 +46,7 @@ const StyledSeat = styled.li`
     color: black;
     cursor: pointer;
     background-color:${(props) =>
-    (props.seat.isAvailable) ? 
-    '#C3CFD9' : (props.selected) ? 
-    '#1AAE9E' : '#FBE192'};
+        (props.selected) ?
+            '#1AAE9E' : (props.seat.isAvailable) ?
+                '#C3CFD9' : '#FBE192'};
 `
