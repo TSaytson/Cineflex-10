@@ -1,20 +1,22 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Topbar from './assets/Topbar'
 import Home from './components/Home'
 import Movie from './components/Movie'
 import Session from './components/Session'
 import Success from './components/Success'
-import { ResetCss } from './ResetCss'
+import { ResetCSS } from './ResetCss'
 
 export default function App() {
 
   return (
     <>
-    <ResetCss/>
+    <ResetCSS/>
     <BrowserRouter>
+    <Topbar/>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/movie/:movieId" element={<Movie />}/>
-        <Route path="/session/:sessionId" element={<Session />} />
+        <Route path="/session/:showtimeId" element={<Session />} />
         <Route path='/sucess' element={<Success />}/>
       </Routes>
       </BrowserRouter>
