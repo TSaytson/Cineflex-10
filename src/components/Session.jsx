@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import styled from 'styled-components';
 
@@ -7,7 +7,6 @@ import Select from "../assets/Select";
 import Footer from '../assets/Footer';
 import Seat from './Seat';
 import Loader from '../assets/Loader';
-import { Form } from 'react-router-dom';
 
 export default function Session() {
     const { showtimeId } = useParams();
@@ -19,6 +18,11 @@ export default function Session() {
     const [movieTitle, setMovieTitle] = useState(null);
     const [session, setSession] = useState(null);
     const [selectedSeats, setSelectedSeats] = useState([]);
+    const [form, setForm] = useState({
+        name: '',
+        CPF: '',
+    });
+    const navigate = useNavigate();
 
     useEffect(() => {
         console.log('entrou no useEffect');
@@ -38,7 +42,28 @@ export default function Session() {
     if (!sessionSeats)
         return <Loader />
 
-    console.log(selectedSeats);
+    function submitData(e) {
+        const reserveSeatsURL = 'https://mock-api.driven.com.br/api/v5/cineflex/seats/book-many'
+        e.preventDefault();
+        setForm({
+            name: e.target[0].value,
+            CPF: e.target[1].value,
+        });
+        if (selectedSeats.length === 0)
+            alert('Selecione o(s) assento(s)');
+        else {
+            const promise = axios.post(reserveSeatsURL, {
+                ids: selectedSeats,
+                name: form.name,
+                cpf: form.CPF
+            });
+            promise.then(() => 
+                navigate('/success'));
+
+            promise.catch((error) =>
+            console.log(error));
+        }
+    }
 
     return (
         <>
@@ -48,7 +73,7 @@ export default function Session() {
                     <Seat key={index}
                         seat={seat}
                         selectedSeats={selectedSeats}
-                        setSelectedSeats={setSelectedSeats}/>
+                        setSelectedSeats={setSelectedSeats} />
                 ))}
             </Seats>
             <SeatsDescription>
@@ -65,18 +90,21 @@ export default function Session() {
                     Indisponível
                 </h1>
             </SeatsDescription>
-            <BuyerInfo>
+            <BuyerInfo onSubmit={(e) => submitData(e)}>
                 <div>
                     <h1>Nome do comprador:</h1>
-                    <input type='text' placeholder='Digite seu nome...'></input>
+                    <input type='text' name='name' placeholder='Digite seu nome...' required></input>
                 </div>
                 <div>
                     <h1>CPF do comprador:</h1>
-                    <input type='text' placeholder='Digite seu CPF...'></input>
+                    <input type='number' name='CPF' placeholder='Digite seu CPF...' required></input>
                 </div>
+                <ReserveSeats type='submit'>
+                    Reservar assento(s)
+                </ReserveSeats>
             </BuyerInfo>
 
-            <ReserveSeats>Reservar assento(s)</ReserveSeats>
+
             <Footer movieTitle={movieTitle} movieImage={movieImage} session={session} />
         </>
     )
@@ -167,6 +195,10 @@ const ReserveSeats = styled.button`
 
     font-family: 'Roboto';
     font-size: 18px;
-    color: white;
     cursor: pointer;
+    color:white;
+    a{
+        text-decoration: none;
+        color:white;
+    }
 `

@@ -1,9 +1,13 @@
-import Topbar from "../assets/Topbar";
+import styled from "styled-components"
+import Select from "../assets/Select"
 
 export default function Success() {
     return (
-
-        <Topbar />
-        
+        <>
+            <Select success={true}>
+                Pedido feito
+                    com sucesso!
+            </Select>
+        </>
     )
 }
