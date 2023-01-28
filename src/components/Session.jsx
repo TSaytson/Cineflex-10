@@ -10,6 +10,7 @@ import Loader from '../assets/Loader';
 
 export default function Session() {
     const { showtimeId } = useParams();
+    console.log(useParams());
 
     const sessionSeatsURL = `https://mock-api.driven.com.br/api/v5/cineflex/showtimes/${showtimeId}/seats`
 
@@ -18,14 +19,12 @@ export default function Session() {
     const [movieTitle, setMovieTitle] = useState(null);
     const [session, setSession] = useState(null);
     const [selectedSeats, setSelectedSeats] = useState([]);
-    const [form, setForm] = useState({
-        name: '',
-        CPF: '',
-    });
+    const [date, setDate] = useState(null);
+    const [seatsName, setSeatsName] = useState([]);
+
     const navigate = useNavigate();
 
     useEffect(() => {
-        console.log('entrou no useEffect');
         const promise = axios.get(sessionSeatsURL);
         promise.then((response) => {
 
@@ -34,6 +33,7 @@ export default function Session() {
             setMovieTitle(response.data.movie.title);
             setSession(`${response.data.day.weekday} - ${response.data.name}`);
             setSessionSeats(response.data.seats);
+            setDate(`${response.data.day.date} - ${response.data.name}`)
         });
         promise.catch((error) =>
             console.log(error.response.data));
@@ -45,23 +45,27 @@ export default function Session() {
     function submitData(e) {
         const reserveSeatsURL = 'https://mock-api.driven.com.br/api/v5/cineflex/seats/book-many'
         e.preventDefault();
-        setForm({
-            name: e.target[0].value,
-            CPF: e.target[1].value,
-        });
         if (selectedSeats.length === 0)
             alert('Selecione o(s) assento(s)');
         else {
             const promise = axios.post(reserveSeatsURL, {
                 ids: selectedSeats,
-                name: form.name,
-                cpf: form.CPF
+                name: e.target['name'].value,
+                cpf: e.target['CPF'].value
             });
-            promise.then(() => 
-                navigate('/success'));
+            promise.then(() => {
+                navigate('/success', { state: 
+                    {buyerInfo:
+                    [e.target['name'].value,
+                    e.target['CPF'].value],
+                    seatsName,
+                    movieTitle, 
+                    date
+                    }});
+            });
 
             promise.catch((error) =>
-            console.log(error));
+                console.log(error));
         }
     }
 
@@ -73,7 +77,9 @@ export default function Session() {
                     <Seat key={index}
                         seat={seat}
                         selectedSeats={selectedSeats}
-                        setSelectedSeats={setSelectedSeats} />
+                        setSelectedSeats={setSelectedSeats}
+                        seatsName = {seatsName}
+                        setSeatsName = {setSeatsName} />
                 ))}
             </Seats>
             <SeatsDescription>
@@ -93,11 +99,15 @@ export default function Session() {
             <BuyerInfo onSubmit={(e) => submitData(e)}>
                 <div>
                     <h1>Nome do comprador:</h1>
-                    <input type='text' name='name' placeholder='Digite seu nome...' required></input>
+                    <input type='text' name='name'
+                        placeholder='Digite seu nome...' required>
+                    </input>
                 </div>
                 <div>
                     <h1>CPF do comprador:</h1>
-                    <input type='number' name='CPF' placeholder='Digite seu CPF...' required></input>
+                    <input type='number' name='CPF'
+                        placeholder='Digite seu CPF...' required>
+                    </input>
                 </div>
                 <ReserveSeats type='submit'>
                     Reservar assento(s)

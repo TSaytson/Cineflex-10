@@ -7,7 +7,10 @@ export default function Loader(){
 }
 
 const StyledLoader = styled.div`
-    margin: 45vh 35vw;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -76px 0 0 -76px;
     border: 16px solid #f3f3f3;
     border-radius: 50%;
     border-top: 16px solid #3498db;

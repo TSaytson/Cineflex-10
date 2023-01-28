@@ -24,7 +24,6 @@ export default function Movie() {
             setMovieTitle(response.data.title);
         })
     }, []);
-    console.log(sessions);
 
     if (!sessions)
         return <Loader />

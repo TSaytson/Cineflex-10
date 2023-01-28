@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import styled from "styled-components"
 
-export default function Seat({ seat, selectedSeats, setSelectedSeats }) {
+export default function Seat(
+    { seat, selectedSeats, setSelectedSeats, seatsName, setSeatsName })
+    {
 
     const [selected, setSelected] = useState(false);
 
@@ -9,12 +11,16 @@ export default function Seat({ seat, selectedSeats, setSelectedSeats }) {
         if( seat.isAvailable && !selected){
             setSelectedSeats([...selectedSeats, seat.id]);
             setSelected(true);
+            setSeatsName([...seatsName, seat.name]);
         }
         else{
-            const newArray = selectedSeats.filter((SelectedSeat) => 
+            const selectedSeatsArray = selectedSeats.filter((SelectedSeat) => 
             SelectedSeat !== seat.id);
             setSelected(false);
-            setSelectedSeats(newArray);
+            setSelectedSeats(selectedSeatsArray);
+            const seatsNameArray = seatsName.filter((seatName) => 
+            seatName !== seat.name);
+            setSeatsName(seatsNameArray);
         }
     }
 
